@@ -1,0 +1,7 @@
+spring:
+  application: { name: pricing-service }
+server: { port: 8082 }
+management: { endpoints: { web: { exposure: { include: health,info } } } }
+service-behavior:
+  latency-ms: ${PRICING_LATENCY_MS:80}
+  reliability-percent: ${PRICING_RELIABILITY_PERCENT:99.5}
