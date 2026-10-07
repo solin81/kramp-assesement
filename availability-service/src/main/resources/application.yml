@@ -1,0 +1,7 @@
+spring:
+  application: { name: availability-service }
+server: { port: 8083 }
+management: { endpoints: { web: { exposure: { include: health,info } } } }
+service-behavior:
+  latency-ms: ${AVAILABILITY_LATENCY_MS:100}
+  reliability-percent: ${AVAILABILITY_RELIABILITY_PERCENT:98}
