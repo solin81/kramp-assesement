@@ -5,24 +5,22 @@ Five self-contained Spring Boot 4.1.1 services, using Java 25 and in-memory samp
 ## Run locally
 
 Java 25 is required; Maven is downloaded automatically by the wrapper.
+Use one of the repository scripts to build and then start every service:
 
 ```bash
-./mvnw clean verify
-./mvnw -pl aggregation-service spring-boot:run
+./run-services.sh       # Linux/macOS
+run-services.bat        # Windows Command Prompt
 ```
 
-Service ports: aggregation `8080`, catalog `8081`, pricing `8082`, availability `8083`, customer `8084`. Start all services with:
+The Bash script keeps all service processes in the current terminal; press `Ctrl+C` to stop them. The Windows script opens one Command Prompt window per service; close those windows to stop them.
 
-```bash
-docker compose up --build
-```
+Service ports: aggregation `8080`, catalog `8081`, pricing `8082`, availability `8083`, customer `8084`.
 
 Examples:
 
 ```bash
 curl 'http://localhost:8081/api/products/P-100?marketCode=en-EN'
 curl 'http://localhost:8080/api/aggregated/products/P-100?marketCode=nl-NL&customerId=C-100'
-curl http://localhost:8080/actuator/health
 ```
 
 The aggregation service reads `CATALOG_SERVICE_URL`, `PRICING_SERVICE_URL`, `AVAILABILITY_SERVICE_URL`, and `CUSTOMER_SERVICE_URL`; all default to local ports. Supported market codes are `en-EN`, `nl-NL`, and `de-DE`.
