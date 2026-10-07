@@ -1,0 +1,7 @@
+spring:
+  application: { name: customer-service }
+server: { port: 8084 }
+management: { endpoints: { web: { exposure: { include: health,info } } } }
+service-behavior:
+  latency-ms: ${CUSTOMER_LATENCY_MS:60}
+  reliability-percent: ${CUSTOMER_RELIABILITY_PERCENT:99}
