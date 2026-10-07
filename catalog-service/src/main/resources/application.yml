@@ -1,0 +1,7 @@
+spring:
+  application: { name: catalog-service }
+server: { port: 8081 }
+management: { endpoints: { web: { exposure: { include: health,info } } } }
+service-behavior:
+  latency-ms: ${CATALOG_LATENCY_MS:50}
+  reliability-percent: ${CATALOG_RELIABILITY_PERCENT:99.9}
