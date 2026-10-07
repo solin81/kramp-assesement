@@ -1,0 +1,9 @@
+spring:
+  application: { name: aggregation-service }
+server: { port: 8080 }
+management: { endpoints: { web: { exposure: { include: health,info } } } }
+downstream:
+  catalog-url: ${CATALOG_SERVICE_URL:http://localhost:8081}
+  pricing-url: ${PRICING_SERVICE_URL:http://localhost:8082}
+  availability-url: ${AVAILABILITY_SERVICE_URL:http://localhost:8083}
+  customer-url: ${CUSTOMER_SERVICE_URL:http://localhost:8084}
