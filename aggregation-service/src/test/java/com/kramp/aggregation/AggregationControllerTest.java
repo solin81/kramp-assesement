@@ -1,7 +1,6 @@
 package com.kramp.aggregation;
 
-import com.kramp.aggregation.client.ServiceResult;
-import com.kramp.aggregation.client.UpstreamClient;
+import com.kramp.aggregation.client.*;
 import com.kramp.aggregation.controller.AggregationController;
 import com.kramp.aggregation.dto.Availability;
 import com.kramp.aggregation.dto.Customer;
@@ -28,7 +27,8 @@ class AggregationControllerTest {
 
     @BeforeEach
     void setUp() {
-        mvc = MockMvcBuilders.standaloneSetup(new AggregationController(new AggregationService(new StubUpstreamClient())))
+        mvc = MockMvcBuilders.standaloneSetup(new AggregationController(new AggregationService(
+                        new StubCatalogClient(), new StubPricingClient(), new StubAvailabilityClient(), new StubCustomerClient())))
                 .setControllerAdvice(new ApiErrorHandling.ApiExceptionHandler())
                 .alwaysDo(print())
                 .build();
@@ -80,45 +80,47 @@ class AggregationControllerTest {
                 .andExpect(jsonPath("$.message").value("Unsupported market code: fr-FR"));
     }
 
-    private static final class StubUpstreamClient extends UpstreamClient {
-        private StubUpstreamClient() {
-            super(null, null, null, null, null);
-        }
-
+    private static final class StubCatalogClient implements CatalogClient {
         @Override
         public ServiceResult<Product> getProduct(String id, String marketCode) {
             return knownProduct(id)
                     ? ServiceResult.available(new Product(id, localized("Product " + id, marketCode), "Description", Map.of(), List.of()))
                     : ServiceResult.unavailable("catalog-service has no matching data (HTTP 404)");
         }
+    }
 
+    private static final class StubPricingClient implements PricingClient {
         @Override
         public ServiceResult<Price> getPrice(String id, String marketCode, String customerId) {
             if (!knownProduct(id)) return ServiceResult.unavailable("pricing-service has no matching data (HTTP 404)");
             BigDecimal finalPrice = "C-100".equals(customerId) ? new BigDecimal("26.96") : new BigDecimal("29.95");
             return ServiceResult.available(new Price(id, new BigDecimal("29.95"), new BigDecimal("2.99"), finalPrice));
         }
+    }
 
+    private static final class StubAvailabilityClient implements AvailabilityClient {
         @Override
         public ServiceResult<Availability> getAvailability(String id, String marketCode) {
             return knownProduct(id)
                     ? ServiceResult.available(new Availability(id, 42, "Warehouse", "Tomorrow"))
                     : ServiceResult.unavailable("availability-service has no matching data (HTTP 404)");
         }
+    }
 
+    private static final class StubCustomerClient implements CustomerClient {
         @Override
         public ServiceResult<Customer> getCustomer(String id, String marketCode) {
             return ("C-100".equals(id) || "C-200".equals(id))
                     ? ServiceResult.available(new Customer(id, "PROFESSIONAL", List.of("Fast delivery")))
                     : ServiceResult.unavailable("customer-service has no matching data (HTTP 404)");
         }
+    }
 
-        private static boolean knownProduct(String id) {
-            return "P-100".equals(id) || "P-200".equals(id);
-        }
+    private static boolean knownProduct(String id) {
+        return "P-100".equals(id) || "P-200".equals(id);
+    }
 
-        private static String localized(String value, String marketCode) {
-            return "en-EN".equals(marketCode) ? value : value + " (" + marketCode + ")";
-        }
+    private static String localized(String value, String marketCode) {
+        return "en-EN".equals(marketCode) ? value : value + " (" + marketCode + ")";
     }
 }
