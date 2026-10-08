@@ -63,14 +63,34 @@ class AggregationControllerTest {
     }
 
     @Test
-    void getProduct_shouldReturnWarnings_whenUpstreamServicesHaveNoMatchingData() throws Exception {
+    void getProduct_shouldFail_whenCatalogCannotProvideProduct() throws Exception {
         mvc.perform(get("/api/aggregated/products/P-999").param("customerId", "C-999"))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(jsonPath("$.message").value("Catalog service is unavailable; product information cannot be returned"));
+    }
+
+    @Test
+    void getProduct_shouldReturnProductWithWarnings_whenPricingAvailabilityAndCustomerFail() throws Exception {
+        AggregationService service = new AggregationService(
+                new StubCatalogClient(),
+                (id, marketCode, customerId) -> ServiceResult.unavailable("pricing-service is unavailable"),
+                (id, marketCode) -> ServiceResult.unavailable("availability-service is unavailable"),
+                (id, marketCode) -> ServiceResult.unavailable("customer-service is unavailable"));
+
+        MockMvc failureMvc = MockMvcBuilders.standaloneSetup(new AggregationController(service))
+                .setControllerAdvice(new ApiErrorHandling.ApiExceptionHandler())
+                .build();
+
+        failureMvc.perform(get("/api/aggregated/products/P-100").param("customerId", "C-100"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.product").doesNotExist())
+                .andExpect(jsonPath("$.product.name").value("Product P-100"))
                 .andExpect(jsonPath("$.price").doesNotExist())
                 .andExpect(jsonPath("$.availability").doesNotExist())
                 .andExpect(jsonPath("$.customer").doesNotExist())
-                .andExpect(jsonPath("$.warnings.length()").value(4));
+                .andExpect(jsonPath("$.warnings.length()").value(3))
+                .andExpect(jsonPath("$.warnings[0]").value("Price is unavailable"))
+                .andExpect(jsonPath("$.warnings[1]").value("Stock is unknown"))
+                .andExpect(jsonPath("$.warnings[2]").value("customer-service is unavailable"));
     }
 
     @Test

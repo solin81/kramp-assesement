@@ -33,6 +33,11 @@ public class AggregationService {
     public AggregatedProduct getProduct(String productId, String marketCode, String customerId) {
         validateMarket(marketCode);
         var productResult = catalogClient.getProduct(productId, marketCode);
+        if (productResult.data() == null) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "Catalog service is unavailable; product information cannot be returned");
+        }
+
         var priceResult = pricingClient.getPrice(productId, marketCode, customerId);
         var availabilityResult = availabilityClient.getAvailability(productId, marketCode);
         Customer customer = null;
@@ -45,9 +50,8 @@ public class AggregationService {
         }
 
         List<String> warnings = new ArrayList<>();
-        addWarning(warnings, productResult.warning());
-        addWarning(warnings, priceResult.warning());
-        addWarning(warnings, availabilityResult.warning());
+        addUnavailableWarning(warnings, priceResult.data(), "Price is unavailable");
+        addUnavailableWarning(warnings, availabilityResult.data(), "Stock is unknown");
         addWarning(warnings, customerWarning);
 
         return new AggregatedProduct(
@@ -62,6 +66,10 @@ public class AggregationService {
 
     private void addWarning(List<String> warnings, String warning) {
         if (warning != null) warnings.add(warning);
+    }
+
+    private void addUnavailableWarning(List<String> warnings, Object data, String warning) {
+        if (data == null) warnings.add(warning);
     }
 
     private void validateMarket(String marketCode) {
