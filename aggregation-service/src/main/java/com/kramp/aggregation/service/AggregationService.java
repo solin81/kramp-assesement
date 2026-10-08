@@ -1,6 +1,6 @@
 package com.kramp.aggregation.service;
 
-import com.kramp.aggregation.client.DownstreamClient;
+import com.kramp.aggregation.client.UpstreamClient;
 import com.kramp.aggregation.dto.AggregatedProduct;
 import com.kramp.aggregation.dto.Customer;
 import org.springframework.http.HttpStatus;
@@ -12,9 +12,9 @@ import java.util.List;
 
 @Service
 public class AggregationService {
-    private final DownstreamClient client;
+    private final UpstreamClient client;
 
-    public AggregationService(DownstreamClient client) {
+    public AggregationService(UpstreamClient client) {
         this.client = client;
     }
 

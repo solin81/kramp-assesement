@@ -11,15 +11,15 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 
 @Component
-public class DownstreamClient {
+public class UpstreamClient {
     private final RestClient http;
     private final String catalog, pricing, availability, customer;
 
-    public DownstreamClient(RestClient http,
-                            @Value("${downstream.catalog-url}") String catalog,
-                            @Value("${downstream.pricing-url}") String pricing,
-                            @Value("${downstream.availability-url}") String availability,
-                            @Value("${downstream.customer-url}") String customer) {
+    public UpstreamClient(RestClient http,
+                          @Value("${upstream.catalog-url}") String catalog,
+                          @Value("${upstream.pricing-url}") String pricing,
+                          @Value("${upstream.availability-url}") String availability,
+                          @Value("${upstream.customer-url}") String customer) {
         this.http = http;
         this.catalog = catalog;
         this.pricing = pricing;

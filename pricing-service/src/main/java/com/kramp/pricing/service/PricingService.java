@@ -46,8 +46,8 @@ public class PricingService {
     private Price calculatePrice(String productId, String customerId) {
         var basePrice = basePrices.get(productId);
         if (basePrice == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Price not found: " + productId);
-        var discount = discountFor(customerId);
-        var finalPrice = basePrice.multiply(BigDecimal.ONE.subtract(discount)).setScale(2, RoundingMode.HALF_UP);
+        var discountForCustomer = discountFor(customerId);
+        var finalPrice = basePrice.multiply(BigDecimal.ONE.subtract(discountForCustomer)).setScale(2, RoundingMode.HALF_UP);
         return new Price(productId, basePrice, basePrice.subtract(finalPrice), finalPrice);
     }
 
