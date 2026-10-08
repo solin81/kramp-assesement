@@ -2,7 +2,7 @@ package com.kramp.pricing;
 
 import com.kramp.pricing.controller.PricingController;
 import com.kramp.pricing.error.ApiErrorHandling;
-import com.kramp.pricing.service.PricingService;
+import com.kramp.pricing.service.InMemoryPricingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,7 +18,7 @@ class PricingControllerTest {
 
     @BeforeEach
     void setUp() {
-        mvc = MockMvcBuilders.standaloneSetup(new PricingController(new PricingService()))
+        mvc = MockMvcBuilders.standaloneSetup(new PricingController(new InMemoryPricingService()))
                 .setControllerAdvice(new ApiErrorHandling.ApiExceptionHandler())
                 .alwaysDo(print())
                 .build();

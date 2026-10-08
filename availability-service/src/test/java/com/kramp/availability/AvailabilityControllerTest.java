@@ -2,7 +2,7 @@ package com.kramp.availability;
 
 import com.kramp.availability.controller.AvailabilityController;
 import com.kramp.availability.error.ApiErrorHandling;
-import com.kramp.availability.service.AvailabilityService;
+import com.kramp.availability.service.InMemoryAvailabilityService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,7 +18,7 @@ class AvailabilityControllerTest {
 
     @BeforeEach
     void setUp() {
-        mvc = MockMvcBuilders.standaloneSetup(new AvailabilityController(new AvailabilityService()))
+        mvc = MockMvcBuilders.standaloneSetup(new AvailabilityController(new InMemoryAvailabilityService()))
                 .setControllerAdvice(new ApiErrorHandling.ApiExceptionHandler())
                 .alwaysDo(print())
                 .build();

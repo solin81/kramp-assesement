@@ -2,7 +2,7 @@ package com.kramp.customer;
 
 import com.kramp.customer.controller.CustomerController;
 import com.kramp.customer.error.ApiErrorHandling;
-import com.kramp.customer.service.CustomerService;
+import com.kramp.customer.service.InMemoryCustomerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,7 +18,7 @@ class CustomerControllerTest {
 
     @BeforeEach
     void setUp() {
-        mvc = MockMvcBuilders.standaloneSetup(new CustomerController(new CustomerService()))
+        mvc = MockMvcBuilders.standaloneSetup(new CustomerController(new InMemoryCustomerService()))
                 .setControllerAdvice(new ApiErrorHandling.ApiExceptionHandler())
                 .alwaysDo(print())
                 .build();

@@ -2,7 +2,7 @@ package com.kramp.catalog;
 
 import com.kramp.catalog.controller.CatalogController;
 import com.kramp.catalog.error.ApiErrorHandling;
-import com.kramp.catalog.service.CatalogService;
+import com.kramp.catalog.service.InMemoryCatalogService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
@@ -17,7 +17,7 @@ class CatalogControllerTest {
 
     @BeforeEach
     void setUp() {
-        mvc = MockMvcBuilders.standaloneSetup(new CatalogController(new CatalogService()))
+        mvc = MockMvcBuilders.standaloneSetup(new CatalogController(new InMemoryCatalogService()))
                 .setControllerAdvice(new ApiErrorHandling.ApiExceptionHandler())
                 .alwaysDo(print())
                 .build();
